@@ -1,6 +1,6 @@
 # Проектная работа "Веб-ларек"
 
-Стек: HTML, SCSS, TS, Vite
+Стек: HTML, SCSS, TS, Webpack
 
 Структура проекта:
 - src/ — исходные файлы проекта
@@ -20,14 +20,14 @@
 
 ```
 npm install
-npm run dev
+npm run start
 ```
 
 или
 
 ```
 yarn
-yarn dev
+yarn start
 ```
 ## Сборка
 
