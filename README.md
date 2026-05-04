@@ -1,3 +1,4 @@
+[project "weblarek"](git@github.com:diana1567smolenko-s/weblarek.git)
 # Проектная работа "Веб-ларек"
 
 Стек: HTML, SCSS, TS, Vite
@@ -97,4 +98,148 @@ Presenter - презентер содержит основную логику п
 `on<T extends object>(event: EventName, callback: (data: T) => void): void` - подписка на событие, принимает название события и функцию обработчик.  
 `emit<T extends object>(event: string, data?: T): void` - инициализация события. При вызове события в метод передается название события и объект с данными, который будет использован как аргумент для вызова обработчика.  
 `trigger<T extends object>(event: string, context?: Partial<T>): (data: T) => void` - возвращает функцию, при вызове которой инициализируется требуемое в параметрах событие с передачей в него данных из второго параметра.
+
+Типы данных
+В приложении определены два ключевых объекта — товар и покупатель. Для их описания используются интерфейсы, которые применяются в моделях данных, обеспечивая типизацию и целостность информации.
+
+Интерфейс товара
+`interface IProduct {
+id: string;
+description: string;
+image: string;
+title: string;
+category: string;
+price: number | null;
+}`
+
+Назначение:
+Интерфейс описывает структуру объекта товара, который отображается в каталоге и может быть добавлен в корзину.
+
+Поля:
+`id: string` — уникальный идентификатор товара
+`description: string` — описание товара
+`image: string` — изображение товара
+`title: string` — название товара
+`category: string` — категория товара
+`price: number | null` — цена товара (может отсутствовать)
+
+Тип оплаты
+`type TPayment = 'card' | 'cash';`
+
+Интерфейс покупателя
+`interface IBuyer {
+payment: TPayment;
+email: string;
+phone: string;
+address: string;
+}`
+
+Назначение:
+Интерфейс описывает данные пользователя, необходимые для оформления заказа.
+
+Поля:
+`payment: TPayment` — способ оплаты
+`email: string` — email покупателя
+`phone: string` — телефон покупателя
+`address: string` — адрес доставки
+
+Модели данных реализуют хранение и обработку информации в приложении.
+
+#### Класс Catalog (Каталог товаров)
+Назначение:
+Отвечает за хранение и управление списком товаров и выбранным товаром для детального просмотра.
+Конструктор:
+`constructor()`
+
+Поля:
+`products: IProduct[]` — массив всех товаров
+`selectedProduct: IProduct | null` — выбранный товар
+
+Методы:
+`setProducts(products: IProduct[]): void` — сохраняет массив товаров
+`getProducts(): IProduct[]` — возвращает список товаров
+`getProductById(id: string): IProduct | undefined` — возвращает товар по id
+`setSelectedProduct(product: IProduct): void` — сохраняет выбранный товар
+`getSelectedProduct(): IProduct | null` — возвращает выбранный товар
+
+#### Класс Basket (Корзина)
+Назначение:
+Хранит товары, выбранные пользователем, и предоставляет методы работы с корзиной.
+
+Конструктор:
+`constructor()`
+
+Поля:
+`items: IProduct[]` — массив товаров в корзине
+
+Методы:
+`getItems(): IProduct[]` — возвращает товары в корзине
+`addItem(product: IProduct): void` — добавляет товар
+`removeItem(product: IProduct): void` — удаляет товар
+`clear(): void` — очищает корзину
+`getTotalPrice(): number` — возвращает сумму товаров
+`getItemsCount(): number` — возвращает количество товаров
+`hasItem(id: string): boolean` — проверяет наличие товара
+
+#### Класс Buyer (Покупатель)
+Назначение:
+Отвечает за хранение, изменение и валидацию данных покупателя.
+
+Конструктор:
+`constructor(initialData?: Partial<IBuyer>)`
+
+Параметры:
+`initialData?: Partial<IBuyer>` — начальные данные покупателя
+
+Поля:
+`payment: TPayment | null` — способ оплаты
+`email: string` — email
+`phone: string` — телефон
+`address: string` — адрес доставки
+
+Методы:
+`setData(data: Partial<IBuyer>): void` — обновляет данные покупателя
+`getData(): IBuyer` — возвращает данные покупателя
+`clear(): void` — очищает данные
+`validate(): Partial<Record<keyof IBuyer, string>>` — проверка данных
+
+Слой коммуникации
+В приложении реализован отдельный класс, отвечающий за взаимодействие с сервером. Он инкапсулирует работу с API и использует базовый класс Api.
+
+Назначение:
+- получение товаров с сервера
+- отправка данных заказа
+- изоляция сетевой логики
+
+#### Класс WebLarekApi
+Конструктор:
+`constructor(api: Api)`
+
+Параметры:
+`api: Api` — экземпляр базового API клиента
+Поля:
+`api: Api` — объект для выполнения запросов
+
+Методы:
+1. Получение товаров
+   `getProducts(): Promise<IProduct[]>`
+   Отправляет GET-запрос на:
+   /product/
+   Возвращает:
+   массив товаров
+
+2. Отправка заказа
+   `createOrder(order: IOrderRequest): Promise<IOrderResponse>`
+   Отправляет POST-запрос на:
+   /order/
+   Параметры:
+   `order.items: string[]` — id товаров
+   `order.payment: TPayment` — способ оплаты
+   `order.email: string` — email
+   `order.phone: string` — телефон
+   `order.address: string` — адрес
+3. 
+   Возвращает:
+   ответ сервера с подтверждением заказа
+
 
