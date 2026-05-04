@@ -1,31 +1,39 @@
 import './scss/styles.scss';
-import { Catalog } from './components/Models/Catalog';
-import { Basket } from './components/Models/Basket';
-import { Buyer } from './components/Models/Buyer';
+import {Catalog} from './components/Models/Catalog';
+import {Basket} from './components/Models/Basket';
+import {Buyer} from './components/Models/Buyer';
 
-import { Api } from './components/base/Api';
-import { WebLarekApi } from './components/Models/WebLarekApi';
+import {Api} from './components/base/Api';
+import {WebLarekApi} from './components/Models/WebLarekApi';
+import {IProduct, IProductsResponse} from "./types";
+import {API_URL} from "./utils/constants.ts";
 
 const catalog = new Catalog();
 const basket = new Basket();
 const buyer = new Buyer();
+const invalidBuyer = new Buyer();
 
-const baseApi = new Api('https://larek-api.nomoreparties.co/api/weblarek');
+const baseApi = new Api(API_URL);
 const webLarekApi = new WebLarekApi(baseApi);
 
 console.log('\n=== APP START ===');
 
 webLarekApi.getProducts()
-    .then((products) => {
-
+    .then((response: IProductsResponse) => {
+        const products: IProduct[] = response.items
         console.log('\n=== CATALOG ===');
 
         catalog.setProducts(products);
 
         console.log('Все товары каталога:', catalog.getProducts());
 
-        const firstProduct = products[0];
-        const secondProduct = products[1];
+        const firstProduct = products.find(p => p.id === "854cef69-976d-4c2a-a18c-2aa45046c390");
+        const secondProduct = products.find(p => p.id === "c101ab44-ed99-4a54-990d-47aa2bb4e7d9");
+
+        if (!firstProduct || !secondProduct) {
+            console.log('Товар не найден')
+            return;
+        }
 
         console.log('Товар по id:', catalog.getProductById(firstProduct.id));
 
@@ -59,6 +67,11 @@ webLarekApi.getProducts()
 
         console.log('Данные покупателя:', buyer.getData());
         console.log('Ошибки:', buyer.validate());
+
+        invalidBuyer.setData({});
+
+        console.log('Данные покупателя:', invalidBuyer.getData());
+        console.log('Ошибки:', invalidBuyer.validate());
 
         buyer.clear();
         console.log('После очистки:', buyer.getData());

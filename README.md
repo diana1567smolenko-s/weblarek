@@ -213,7 +213,7 @@ address: string;
 
 #### Класс WebLarekApi
 Конструктор:
-`constructor(api: Api)`
+`constructor(api: IApi)`
 
 Параметры:
 `api: Api` — экземпляр базового API клиента
@@ -222,11 +222,11 @@ address: string;
 
 Методы:
 1. Получение товаров
-   `getProducts(): Promise<IProduct[]>`
+   `getProducts(): Promise<IProductsResponse>`
    Отправляет GET-запрос на:
    /product/
    Возвращает:
-   массив товаров
+`Promise<IProductsResponse>` — возвращает ответ сервера. 
 
 2. Отправка заказа
    `createOrder(order: IOrderRequest): Promise<IOrderResponse>`
@@ -238,6 +238,7 @@ address: string;
    `order.email: string` — email
    `order.phone: string` — телефон
    `order.address: string` — адрес
+   `order.total: number` — количество
 3. 
    Возвращает:
    ответ сервера с подтверждением заказа
